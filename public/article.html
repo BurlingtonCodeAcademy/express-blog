@@ -1,0 +1,21 @@
+<div class='article'>
+  <h2 id='title'></h2>
+  <i id='author'></i>
+  <div id='body'></div>
+</div>
+<script>
+let article_id = document.location.pathname.split('/').splice(-1);
+
+fetch('/articles/' + article_id + '.json')
+  .then(function(response) {
+    return response.json();
+  })
+  .then(fillArticle);
+
+function fillArticle(article) {
+  document.getElementById('title').textContent = article.title;
+  document.getElementById('author').textContent = article.author;  
+  document.getElementById('body').textContent = article.body;  
+}
+
+</script>
