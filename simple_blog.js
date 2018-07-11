@@ -112,12 +112,9 @@ http.createServer(function (request, response) {
   }
 
   function sendSearchResults() {
-    console.log('sending search results')
     let results = allArticles().filter((article) => {
       if (queryParams.get('author')) {
         return article.author.toLowerCase() === queryParams.get('author').toLowerCase();
-      } else {
-        return false;
       }
     });
     data = JSON.stringify(results);
