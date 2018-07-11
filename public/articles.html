@@ -1,0 +1,21 @@
+<div id='articles'>
+  <ul>
+    
+  </ul>
+</div>
+
+<script>
+fetch('/articles.json')
+  .then((response) => response.json())
+  .then(fillArticles)
+
+function fillArticles(articles) {
+  let list = document.querySelector('#articles > ul');
+  for (let article of articles) {
+    let item = document.createElement('li');
+    item.innerHTML = '<a href="/articles/' + article.id + '">' + article.title + '</a>';;
+    list.appendChild(item);
+  }  
+}
+
+</script>

@@ -7,15 +7,16 @@
 let article_id = document.location.pathname.split('/').splice(-1);
 
 fetch('/articles/' + article_id + '.json')
-  .then(function(response) {
-    return response.json();
-  })
-  .then(fillArticle);
+  .then((response) => response.json())
+  .then(fillArticleFromJson)
 
-function fillArticle(article) {
-  document.getElementById('title').textContent = article.title;
-  document.getElementById('author').textContent = article.author;  
-  document.getElementById('body').textContent = article.body;  
+function fillArticleFromJson(articleJson) {
+  document.getElementById('title').textContent = articleJson.title;
+  document.getElementById('author').textContent = articleJson.author;
+  document.getElementById('body').textContent = articleJson.body;
 }
+
+console.log("hi");
+
 
 </script>
