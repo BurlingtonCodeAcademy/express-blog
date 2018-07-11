@@ -1,4 +1,8 @@
-<h2>Articles:</h2>
+<form method='GET' action='/search'>
+  Search by Author: <input type="search" name="author">
+</form>
+
+<h2>Search Results:</h2>
 <div id='articles'>
   <ul>
     
@@ -6,7 +10,7 @@
 </div>
 
 <script>
-fetch('/articles.json')
+fetch('/search.json' + document.location.search)
   .then((response) => response.json())
   .then(fillArticles)
 

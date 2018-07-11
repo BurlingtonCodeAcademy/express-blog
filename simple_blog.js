@@ -9,18 +9,19 @@ http.createServer(function (request, response) {
   let contentType;
   let file;
   let data;
-  let path = decodeURIComponent(request.url);
+
+  let url = new URL(request.url, 'http://localhost:5000/') // require('url').parse(request.url);
+  let path = url.pathname;
+  let queryParams = url.searchParams;
 
   console.log('Finding ' + path);
 
   function parsePath(path) {
     let format;
-
     if (path.endsWith('.json')) {
       path = path.substring(0, path.length - 5);
       format = 'json';
     }
-
     let pathParts = path.slice(1).split('/');
     let action = pathParts.shift();
     let id = pathParts.shift();
@@ -62,13 +63,11 @@ http.createServer(function (request, response) {
 
   function handleFileRequest() {
     file = $path.resolve($path.join(publicDir, path));
-    // verify that the requested file is in this directory, 
-    // not elsewhere on the server's filesystem
     if (!file.startsWith(publicDir)) {
       console.log("User requested file '" + request.url + "' (not permitted)");
       sendError(403, "Error: you are not permitted to access that file."); // 403 Forbidden
     }
-    else if (fs.statSync(file).isDirectory()) {
+    else if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
       let indexFile = $path.join(file, "index.html");
       if (fs.existsSync(indexFile)) {
         sendFile(indexFile);
@@ -88,6 +87,7 @@ http.createServer(function (request, response) {
     if (pathParams.format === 'json') {
       // if it's asking for json, send it the json file
       sendFile(articleDataFile);
+      contentType = 'text/json';
     } else {
       // if it's asking for HTML, send it the article.html file
       if (fs.existsSync(articleDataFile)) {
@@ -99,12 +99,29 @@ http.createServer(function (request, response) {
     }
   }
 
-  function sendArticleList() {
+  function allArticles() {
     let articlesDir = $path.join(publicDir, "articles");
-    let files = fs.readdirSync(articlesDir)
+    return fs.readdirSync(articlesDir)
       .filter(file => file.endsWith('.json'))
-      .map(file => JSON.parse(fs.readFileSync($path.join(articlesDir, file))))
-    data = JSON.stringify(files);
+      .map(file => JSON.parse(fs.readFileSync($path.join(articlesDir, file))));
+  }
+
+  function sendArticleList() {
+    data = JSON.stringify(allArticles());
+    contentType = 'text/json';
+  }
+
+  function sendSearchResults() {
+    console.log('sending search results')
+    let results = allArticles().filter((article) => {
+      if (queryParams.get('author')) {
+        return article.author.toLowerCase() === queryParams.get('author').toLowerCase();
+      } else {
+        return false;
+      }
+    });
+    data = JSON.stringify(results);
+    contentType = 'text/json';
   }
 
   let pathParams = parsePath(path);
@@ -118,6 +135,13 @@ http.createServer(function (request, response) {
       sendFile($path.join(publicDir, 'articles.html'));
     }
   }
+  else if (pathParams.action === 'search') {
+    if (pathParams.format === 'json') {
+      sendSearchResults()
+    } else {
+      sendFile($path.join(publicDir, 'search.html'));
+    }
+  }
   else {
     handleFileRequest();
   }
@@ -128,5 +152,3 @@ http.createServer(function (request, response) {
 }).listen(port);
 
 console.log("Listening on port " + port);
-
-
