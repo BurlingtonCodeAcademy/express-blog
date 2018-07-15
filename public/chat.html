@@ -1,0 +1,37 @@
+<style>
+  #chat {
+    border: 1px solid salmon;
+  }
+</style>
+
+<h1>Chat</h1>
+
+<div id='chatLog'>
+
+</div>
+
+<form id='chatForm' method='POST' action='chat'>
+  <input type='text' name='content'>
+  <input type='submit'>
+</form>
+
+<script>
+  let chatForm = document.getElementById('chatForm');
+  let chatLog = document.getElementById('chatLog');
+  chatForm.addEventListener('submit', function(event) {
+    let inputElement = chatForm.querySelector('input[name=content]');
+    let message = inputElement.value;
+    let params = new URLSearchParams();
+    params.append('content', message);
+    fetch('/chat', {
+      body: params, method: 'POST'})
+      .then(response => response.json())
+      .then((messages) => {
+        console.log(messages);
+        chatLog.innerHTML = messages.map(message => message.content).join('<br>');
+      }
+    );
+    inputElement.value = '';
+    event.preventDefault();
+  });
+</script>
