@@ -15,19 +15,37 @@
   <input type='submit'>
 </form>
 
+<button id='refresh'>Refresh</button>
+
 <script>
   let chatForm = document.getElementById('chatForm');
   let chatLog = document.getElementById('chatLog');
+
+  let refreshButton = document.getElementById('refresh');
+  refreshButton.onclick = fetchMessages;
+
+  function fetchMessages() {
+    fetch('/chat', {
+    })
+      .then(response => response.json())
+      .then((messages) => {
+        chatLog.innerHTML = messages.map(message => message.content).join('<br>');
+      }
+    );
+  }
+
   chatForm.addEventListener('submit', function(event) {
     let inputElement = chatForm.querySelector('input[name=content]');
     let message = inputElement.value;
     let params = new URLSearchParams();
     params.append('content', message);
+
     fetch('/chat', {
-      body: params, method: 'POST'})
+      body: params, 
+      method: 'POST'
+    })
       .then(response => response.json())
       .then((messages) => {
-        console.log(messages);
         chatLog.innerHTML = messages.map(message => message.content).join('<br>');
       }
     );

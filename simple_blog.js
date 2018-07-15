@@ -8,7 +8,6 @@ const port = process.env.PORT || 5000;
 
 http.createServer(function (request, response) {
   let contentType;
-  let file;
   let data;
 
   let url = new URL(request.url, 'http://localhost:5000/') // require('url').parse(request.url);
@@ -16,7 +15,7 @@ http.createServer(function (request, response) {
   let queryParams = url.searchParams;
 
   console.log('Finding ' + path);
-  
+
   // we have moved some functions into this new object
   let fileServer = new FileServer(request, response);
 
