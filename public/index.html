@@ -9,20 +9,3 @@
   </li>
 </ul>
 
-<script>
-  // this is for the Cookies lesson
-  function parseCookies() {
-    let cookies = {};
-    if (document.cookie) {
-      for (let c of document.cookie.split(';')) {
-        let [key, value] = c.trim().split('=');
-        cookies[key] = value;
-      }
-    }
-    return cookies;
-  }
-  let cookies = parseCookies();
-  if (cookies.hitCount) {
-    document.write('Hits: ' + cookies.hitCount);
-  }
-</script>

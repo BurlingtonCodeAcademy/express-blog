@@ -2,36 +2,66 @@ const fs = require('fs');
 const http = require('http');
 const $path = require('path');
 
-const FileServer = require('./lib/file-server');
+const Assistant = require('./lib/assistant');
 const publicDir = $path.resolve('./public');
 const port = process.env.PORT || 5000;
 
 http.createServer(function (request, response) {
-  let contentType;
-  let data;
-
   let url = new URL(request.url, 'http://localhost:5000/') // require('url').parse(request.url);
   let path = url.pathname;
   let queryParams = url.searchParams;
 
   console.log('Finding ' + path);
 
-  // we have moved some functions into this new object
-  let fileServer = new FileServer(request, response);
+  let assistant = new Assistant(request, response);
+  let pathParams = parsePath(path);
+  
+  console.log(pathParams)
+
+  // routing
+  if (pathParams.action === 'articles') {
+    handleArticles();
+  }
+  else if (pathParams.action === 'search') {
+    handleSearch();
+  }
+  else {
+    assistant.handleFileRequest();
+  }
+
+  function handleArticles() {
+    if (pathParams.id) {
+      sendArticle(pathParams);
+    }
+    else if (pathParams.format === 'json') {
+      sendArticleList(data);
+    }
+    else {
+      assistant.sendFile($path.join(publicDir, 'articles.html'));
+    }
+  }
+
+  function handleSearch() {
+    if (pathParams.format === 'json') {
+      sendSearchResults()
+    } else {
+      assistant.sendFile($path.join(publicDir, 'search.html'));
+    }
+  }
 
   function sendArticle(pathParams) {
     let articlesDir = $path.join(publicDir, "articles");
     let articleDataFile = $path.join(articlesDir, pathParams.id + ".json");
     if (pathParams.format === 'json') {
       // if it's asking for json, send it the json file
-      fileServer.sendFile(articleDataFile);
+      assistant.sendFile(articleDataFile);
     } else {
       // if it's asking for HTML, send it the article.html file
       if (fs.existsSync(articleDataFile)) {
         let htmlFile = $path.join(publicDir, "article.html");
-        fileServer.sendFile(htmlFile);
+        assistant.sendFile(htmlFile);
       } else {
-        fileServer.sendError(404, `Article ${pathParams.id} not found`);
+        assistant.sendError(404, `Article ${pathParams.id} not found`);
       }
     }
   }
@@ -44,22 +74,20 @@ http.createServer(function (request, response) {
   }
 
   function sendArticleList() {
-    data = JSON.stringify(allArticles());
-    contentType = 'text/json';
-    finishResponse(contentType, data);
+    let data = JSON.stringify(allArticles());
+    assistant.finishResponse('text/json', data);
   }
 
   function sendSearchResults() {
     let results = allArticles().filter((article) => {
       if (queryParams.get('author')) {
         let articleAuthor = article.author.toLowerCase();
-        let queryValue = queryParams.get('author').toLowerCase();
-        return articleAuthor.includes(queryValue);
+        let targetAuthor = queryParams.get('author').toLowerCase();
+        return articleAuthor.includes(targetAuthor);
       }
     });
-    data = JSON.stringify(results);
-    contentType = 'text/json';
-    finishResponse(contentType, data);
+    let data = JSON.stringify(results);
+    assistant.finishResponse('text/json', data);
   }
 
   function parsePath(path) {
@@ -73,32 +101,6 @@ http.createServer(function (request, response) {
     let id = pathParts.shift();
     let pathParams = { action: action, id: id, format: format };
     return pathParams;
-  }
-
-  let pathParams = parsePath(path);
-  console.log(pathParams)
-  if (pathParams.action === 'articles') {
-    if (pathParams.id) {
-      sendArticle(pathParams);
-    } else if (pathParams.format === 'json') {
-      sendArticleList(data);
-    } else {
-      fileServer.sendFile($path.join(publicDir, 'articles.html'));
-    }
-  }
-  else if (pathParams.action === 'search') {
-    if (pathParams.format === 'json') {
-      sendSearchResults()
-    } else {
-      fileServer.sendFile($path.join(publicDir, 'search.html'));
-    }
-  }
-  else {
-    fileServer.handleFileRequest();
-  }
-
-  function finishResponse(contentType, data) {
-    fileServer.finishResponse(contentType, data);
   }
 
 }).listen(port);
