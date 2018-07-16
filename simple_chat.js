@@ -24,24 +24,6 @@ http.createServer(function (request, response) {
     return pathParams;
   }
 
-  function parsePostParams(callback) {
-    let body = [];
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    }).on('end', () => {
-      body = Buffer.concat(body).toString();
-      // at this point, `body` has the entire request body stored in it as a string
-      console.log("received post body: " + body)
-      let fields = body.split('&');
-      let params = {};
-      for (let field of fields) {
-        let [ name, value ] = field.split('=');
-        // see http://unixpapa.com/js/querystring.html section 3.1
-        params[name] = decodeURIComponent(value.replace(/\+/g,' '));
-      }
-      callback(params);
-    });
-  }
 
   function sendChatMessages() {
     let data = JSON.stringify(messages);

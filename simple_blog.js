@@ -15,12 +15,18 @@ http.createServer(function (request, response) {
 
   let assistant = new Assistant(request, response);
   let pathParams = parsePath(path);
-  
+  let articlesDir = $path.join(publicDir, "articles");
+
   console.log(pathParams)
 
   // routing
   if (pathParams.action === 'articles') {
-    handleArticles();
+    if (request.method === 'GET') {
+      getArticles();
+    } 
+    else if (request.method === 'POST') {
+      postArticles();
+    }
   }
   else if (pathParams.action === 'search') {
     handleSearch();
@@ -29,12 +35,12 @@ http.createServer(function (request, response) {
     assistant.handleFileRequest();
   }
 
-  function handleArticles() {
+  function getArticles() {
     if (pathParams.id) {
       sendArticle(pathParams);
     }
     else if (pathParams.format === 'json') {
-      sendArticleList(data);
+      sendArticleList();
     }
     else {
       assistant.sendFile($path.join(publicDir, 'articles.html'));
@@ -50,7 +56,6 @@ http.createServer(function (request, response) {
   }
 
   function sendArticle(pathParams) {
-    let articlesDir = $path.join(publicDir, "articles");
     let articleDataFile = $path.join(articlesDir, pathParams.id + ".json");
     if (pathParams.format === 'json') {
       // if it's asking for json, send it the json file
@@ -67,7 +72,6 @@ http.createServer(function (request, response) {
   }
 
   function allArticles() {
-    let articlesDir = $path.join(publicDir, "articles");
     return fs.readdirSync(articlesDir)
       .filter(file => file.endsWith('.json'))
       .map(file => JSON.parse(fs.readFileSync($path.join(articlesDir, file))));
@@ -101,6 +105,39 @@ http.createServer(function (request, response) {
     let id = pathParts.shift();
     let pathParams = { action: action, id: id, format: format };
     return pathParams;
+  }
+
+  function postArticles() {
+    let articles = allArticles();
+    if (pathParams.id) {
+      sendError(500, "TODO: update article")
+    } else {
+      // find the highest id...
+      let id = articles.reduce((topId, article) => {
+        console.log(article.id);
+        return Math.max(topId, article.id);
+      }, 1);
+      // ...and pick a higher one
+      let newId = id + 1;
+      assistant.parsePostParams((params) => {
+        console.log(params);
+        let article = {
+          id: newId,
+          author: params.author,
+          title: params.title,
+          body: params.body
+        }
+        let articleDataFile = $path.join(articlesDir, newId + ".json");
+        fs.writeFile(articleDataFile, JSON.stringify(article), (err) => {
+          if (err) {
+            assistant.sendError(500, err);
+          } else {
+            assistant.sendRedirect('/articles');
+          }
+        })
+        console.log(article);
+      });
+    }
   }
 
 }).listen(port);
