@@ -5,7 +5,8 @@ const port = process.env.PORT || 5000;
 let messages = [];
 
 http.createServer(function (request, response) {
-  let url = new URL(request.url, 'http://localhost:5000/') // require('url').parse(request.url);
+  // let url = new URL(request.url, 'http://localhost:5000/')
+  let url = require('url').parse(request.url);
   let path = url.pathname;
 
   console.log('Finding ' + path);
@@ -39,7 +40,7 @@ http.createServer(function (request, response) {
     if (request.method === 'GET') {
       sendChatMessages();
     } else if (request.method === 'POST') {
-      parsePostParams((params) => {
+      assistant.parsePostParams((params) => {
         let message = {
           username: "Anonymous",
           content: params.content,
