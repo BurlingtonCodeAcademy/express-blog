@@ -4,7 +4,9 @@ const port = process.env.PORT || 5000;
 
 let messages = [];
 
-http.createServer(function (request, response) {
+http.createServer(handleRequest).listen(port);
+
+function handleRequest (request, response) {
   // let url = new URL(request.url, 'http://localhost:5000/')
   let url = require('url').parse(request.url);
   let path = url.pathname;
@@ -61,6 +63,6 @@ http.createServer(function (request, response) {
   } else {
     assistant.handleFileRequest();
   }
-}).listen(port);
+}
 
 console.log("Listening on port " + port);
