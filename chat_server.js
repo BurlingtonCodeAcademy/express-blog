@@ -7,7 +7,6 @@ let messages = [];
 http.createServer(handleRequest).listen(port);
 console.log("Listening on port " + port);
 
-
 function handleRequest(request, response) {
   // let url = new URL(request.url, 'http://localhost:5000/')
   let url = require('url').parse(request.url);
@@ -20,7 +19,11 @@ function handleRequest(request, response) {
   let pathParams = parsePath(path);
   if (isChatAction(pathParams)) {
     handleChatAction(request, assistant);
-  } else {
+  } 
+  else if (assistant.isRoot()) {
+    assistant.sendFile('./public/chat.html');
+  } 
+  else {
     assistant.handleFileRequest();
   }
 }
