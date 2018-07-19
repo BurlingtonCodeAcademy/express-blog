@@ -38,6 +38,10 @@ function parsePath(path) {
   return pathParams;
 }
 
+function isChatAction(pathParams) {
+  return (pathParams.action === 'chat');
+}
+
 function handleChatAction(request, handler) {
   if (request.method === 'GET') {
     sendChatMessages(handler);
@@ -55,10 +59,6 @@ function handleChatAction(request, handler) {
   } else {
     handler.sendError(405, "Method '" + request.method + "' Not Allowed");
   }
-}
-
-function isChatAction(pathParams) {
-  return (pathParams.action === 'chat');
 }
 
 function sendChatMessages(handler) {
