@@ -5,22 +5,19 @@ const $path = require('path');
 const port = process.env.PORT || 5000;
 
 http.createServer(function (request, response) {
-  let contentType;
   let file;
-  let data;
-
   let url = require('url').parse(request.url, true);
   let path = url.pathname;
+
   // remove trailing slash
   path = path.replace(/\/*$/, '');
-
-  console.log(url);
 
   function sendFile(file) {
     try {
       console.log('Sending ' + file);
       data = fs.readFileSync(file);
       contentType = mime.lookup(file);
+      finishResponse(contentType, data);
     }
     catch (error) {
       console.log(error);
@@ -30,18 +27,33 @@ http.createServer(function (request, response) {
 
   function sendError(statusCode, message) {
     console.log(`Error ${statusCode}: ${message}`);
-    data = message;
     response.statusCode = statusCode;
-    contentType = 'text/plain';
-    file = null;
+    finishResponse('text/plain', message);
+  }
+
+  function finishResponse(contentType, data) {
+    response.setHeader('Content-Type', contentType + '; charset=utf-8');
+    response.write(data);
+    response.end();
+  }
+
+  function sendDirectory(file) {
+    let indexFile = file + "/index.html";
+    if (fs.existsSync(indexFile)) {
+      sendFile(indexFile);
+    }
+    else {
+      sendDirectoryList(file);
+    }
   }
 
   function sendDirectoryList(dir) {
     let files = fs.readdirSync(dir);
     let html = files.map((f) => `<li><a href="${path}/${f}">${f}</a></li>`)
       .join('\n');
-    data = `<h1>${path.slice(1)}</h1> <ul> ` + html + ` </ul>`;
-    contentType = 'text/html';
+      finishResponse('text/html', 
+      `<h1>${path.slice(1)}</h1> <ul> ` + html + ` </ul>`
+    );
   }
 
   // verify that the requested file is in the public directory,
@@ -51,28 +63,17 @@ http.createServer(function (request, response) {
   if (!file.startsWith(publicDir)) {
     console.log("User requested file '" + request.url + "' (not permitted)");
     sendError(403, "Error: you are not permitted to access that file."); // 403 Forbidden
-  } 
-
-  // serve directory index (static or dynamic)
-  else if (fs.statSync(file).isDirectory()) {
-    let indexFile = file + "/index.html"
-    if (fs.existsSync(indexFile)) {
-      sendFile(indexFile);
-    } else {
-      sendDirectoryList(file); 
-    }
   }
-
-  // it's a file, so send it
+  else if (fs.statSync(file).isDirectory()) {
+    // serve directory index (static or dynamic)
+    sendDirectory(file);
+  }
   else {
+    // it's a file, so send it
     sendFile(file);
   }
+  //todo: cach ENOENT :-(
   
-  
-
-  response.setHeader('Content-Type', contentType + '; charset=utf-8');
-  response.write(data);
-  response.end();
 }).listen(port);
 
 console.log("Listening on port " + port);
