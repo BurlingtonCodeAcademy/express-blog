@@ -5,8 +5,10 @@ const port = process.env.PORT || 5000;
 let messages = [];
 
 http.createServer(handleRequest).listen(port);
+console.log("Listening on port " + port);
 
-function handleRequest (request, response) {
+
+function handleRequest(request, response) {
   // let url = new URL(request.url, 'http://localhost:5000/')
   let url = require('url').parse(request.url);
   let path = url.pathname;
@@ -14,55 +16,53 @@ function handleRequest (request, response) {
   console.log('Finding ' + path);
   let assistant = new Assistant(request, response);
 
-  function parsePath(path) {
-    let format;
-    if (path.endsWith('.json')) {
-      path = path.substring(0, path.length - 5);
-      format = 'json';
-    }
-    let pathParts = path.slice(1).split('/');
-    let action = pathParts.shift();
-    let id = pathParts.shift();
-    let pathParams = { action: action, id: id, format: format };
-    return pathParams;
-  }
-
-  function isChatAction(pathParams) {
-    return (pathParams.action === 'chat');
-  }
-
-  function handleChatAction() {
-    if (request.method === 'GET') {
-      sendChatMessages();
-    } else if (request.method === 'POST') {
-      assistant.parsePostParams((params) => {
-        let message = {
-          username: "Anonymous",
-          content: params.content,
-          when: new Date(Date.now()).toISOString()
-        }
-        messages.push(message);
-
-        sendChatMessages();
-      });
-    } else {
-      assistant.sendError(405, "Method '" + request.method + "' Not Allowed");
-    }
-  }
-
-  function sendChatMessages() {
-    let data = JSON.stringify(messages);
-    let contentType = 'text/json';
-    assistant.finishResponse(contentType, data);
-  }
-
   // "routing" happens here (not very complicated)
   let pathParams = parsePath(path);
   if (isChatAction(pathParams)) {
-    handleChatAction();
+    handleChatAction(request, assistant);
   } else {
     assistant.handleFileRequest();
   }
 }
 
-console.log("Listening on port " + port);
+function parsePath(path) {
+  let format;
+  if (path.endsWith('.json')) {
+    path = path.substring(0, path.length - 5);
+    format = 'json';
+  }
+  let pathParts = path.slice(1).split('/');
+  let action = pathParts.shift();
+  let id = pathParts.shift();
+  let pathParams = { action: action, id: id, format: format };
+  return pathParams;
+}
+
+function handleChatAction(request, handler) {
+  if (request.method === 'GET') {
+    sendChatMessages(handler);
+  } else if (request.method === 'POST') {
+    handler.parsePostParams((params) => {
+      let message = {
+        username: "Anonymous",
+        content: params.content,
+        when: new Date(Date.now()).toISOString()
+      }
+      messages.push(message);
+
+      sendChatMessages(handler);
+    });
+  } else {
+    handler.sendError(405, "Method '" + request.method + "' Not Allowed");
+  }
+}
+
+function isChatAction(pathParams) {
+  return (pathParams.action === 'chat');
+}
+
+function sendChatMessages(handler) {
+  let data = JSON.stringify(messages);
+  let contentType = 'text/json';
+  handler.finishResponse(contentType, data);
+}
