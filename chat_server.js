@@ -20,7 +20,7 @@ function handleRequest(request, response) {
   if (isChatAction(pathParams)) {
     handleChatAction(request, assistant);
   } 
-  else if (assistant.isRoot()) {
+  else if (assistant.isRootPathRequested()) {
     assistant.sendFile('./public/chat.html');
   } 
   else {
