@@ -25,18 +25,11 @@ http.createServer(function (request, response) {
     return pathParams;
   }
 
-
-  function sendChatMessages() {
-    let data = JSON.stringify(messages);
-    let contentType = 'text/json';
-    assistant.finishResponse(contentType, data);
+  function isChatAction(pathParams) {
+    return (pathParams.action === 'chat');
   }
 
-  // routing here
-  let pathParams = parsePath(path);
-  console.log(pathParams)
-
-  if (pathParams.action === 'chat') {
+  function handleChatAction() {
     if (request.method === 'GET') {
       sendChatMessages();
     } else if (request.method === 'POST') {
@@ -53,6 +46,18 @@ http.createServer(function (request, response) {
     } else {
       assistant.sendError(405, "Method '" + request.method + "' Not Allowed");
     }
+  }
+
+  function sendChatMessages() {
+    let data = JSON.stringify(messages);
+    let contentType = 'text/json';
+    assistant.finishResponse(contentType, data);
+  }
+
+  // "routing" happens here (not very complicated)
+  let pathParams = parsePath(path);
+  if (isChatAction(pathParams)) {
+    handleChatAction();
   } else {
     assistant.handleFileRequest();
   }
