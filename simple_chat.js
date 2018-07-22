@@ -24,7 +24,6 @@ http.createServer(function (request, response) {
     return pathParams;
   }
 
-
   function sendChatMessages() {
     let data = JSON.stringify(messages);
     let contentType = 'text/json';
@@ -42,9 +41,9 @@ http.createServer(function (request, response) {
       parsePostParams((params) => {
         let message = {
           username: "Anonymous",
-          content: params.content,
-          when: new Date(Date.now()).toISOString()
-        }
+          body: params.body,
+          when: new Date().toISOString()
+        };
         messages.push(message);
 
         sendChatMessages();

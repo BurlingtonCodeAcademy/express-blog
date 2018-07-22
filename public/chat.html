@@ -11,7 +11,7 @@
 </div>
 
 <form id='chatForm' method='POST' action='chat'>
-  <input type='text' name='content'>
+  <input type='text' name='body'>
   <input type='submit'>
 </form>
 
@@ -29,16 +29,16 @@
     })
       .then(response => response.json())
       .then((messages) => {
-        chatLog.innerHTML = messages.map(message => message.content).join('<br>');
+        chatLog.innerHTML = messages.map(message => message.body).join('<br>');
       }
     );
   }
 
   chatForm.addEventListener('submit', function(event) {
-    let inputElement = chatForm.querySelector('input[name=content]');
+    let inputElement = chatForm.querySelector('input[name=body]');
     let message = inputElement.value;
     let params = new URLSearchParams();
-    params.append('content', message);
+    params.append('body', message);
 
     fetch('/chat', {
       body: params, 
@@ -46,7 +46,7 @@
     })
       .then(response => response.json())
       .then((messages) => {
-        chatLog.innerHTML = messages.map(message => message.content).join('<br>');
+        chatLog.innerHTML = messages.map(message => message.body).join('<br>');
       }
     );
     inputElement.value = '';
