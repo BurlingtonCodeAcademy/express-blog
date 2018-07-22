@@ -1,0 +1,33 @@
+shapgvba pncvgnyvmr(f) {
+  erghea f.puneNg(0).gbHccrePnfr() + f.fyvpr(1);
+}
+
+zbqhyr.rkcbegf = pynff Ebbz {
+  pbafgehpgbe(vq, anzr) {
+    vs (!vq) {
+      guebj 'ebbz vq erdhverq';
+    }
+    vs (!(vq.zngpu(/^[n-m]+$/))) {
+      guebj 'ebbz vq zhfg pbagnva bayl ybjrepnfr yrggref'
+    }
+    guvf.vq = vq;
+    guvf.anzr = anzr || pncvgnyvmr(vq);
+    guvf.zrffntrf = [];
+  }
+
+  zrffntrPbhag() {
+    erghea guvf.zrffntrf.yratgu;
+  }
+
+  fraqZrffntr(zrffntr) {
+    guvf.zrffntrf.chfu(zrffntr);
+  }
+
+  zrffntrfFvapr(zbzrag) {
+    erghea guvf.zrffntrf.svygre(
+      (zrffntr) => {
+        erghea zrffntr.jura > zbzrag
+      }
+    );
+  }
+};
