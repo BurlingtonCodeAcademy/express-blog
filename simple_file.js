@@ -1,6 +1,6 @@
-let fs = require('fs');
-let http = require('http');
-var mime = require('mime-types'); // https://github.com/jshttp/mime-types
+const fs = require('fs');
+const http = require('http');
+const mime = require('mime-types'); // https://github.com/jshttp/mime-types
 const $path = require('path');
 const port = process.env.PORT || 5000;
 
@@ -8,13 +8,13 @@ http.createServer(function (request, response) {
   let contentType;
   let file;
   let data;
-  let path = request.url;
+  let path = decodeURIComponent(request.url);
 
   if (path === '/') {
     file = 'index.html';
   }
   else {
-    file = '.' + decodeURIComponent(request.url);
+    file = '.' + path;
   }
 
   try {

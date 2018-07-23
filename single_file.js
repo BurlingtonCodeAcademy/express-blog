@@ -7,6 +7,8 @@ http.createServer(function (request, response) {
   let file;
   let data;
 
+  console.log("''URL'' is " +)
+
   file = 'index.html';
   try {
     console.log('Serving ' + file);
