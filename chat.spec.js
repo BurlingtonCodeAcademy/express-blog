@@ -102,7 +102,7 @@ describe('Message', () => {
       message = new Message({author: 'alice', body: 'My dog has fleas.'});
       // normally messages set their own "when"
       // but for testing purposes only, we are forcing it to be a known date
-      message.when = new Date(Date.UTC(2000, 10, 1, 11, 3, 4));
+      message.when = new Date(Date.UTC(2017, 10, 1, 11, 3, 4));
 
       json = JSON.stringify(message);
     });
@@ -113,7 +113,7 @@ describe('Message', () => {
       expect(json).toContain('"body":"My dog has fleas."');
     });
     it('contains a when field', () => {
-      expect(json).toContain('"when":"2000-11-01T11:03:04.000Z"');
+      expect(json).toContain('"when":"2017-11-01T11:03:04.000Z"');
     });
 
   })
@@ -191,15 +191,14 @@ describe('Room', () => {
         let messages = room.messages;
         expect(messages[0]).toEqual(message);
       });
-
     });
 
     describe('after being sent several messages', () => {
       let earlyMessage, lateMessage, laterMessage;
-      let nine_am = new Date(2000, 10, 1, 9, 0, 0);
-      let noon = new Date(2000, 10, 1, 12, 0, 0);
-      let six_pm = new Date(2000, 10, 1, 18, 0, 0);
-      let nine_pm = new Date(2000, 10, 1, 21, 0, 0);
+      let nine_am = new Date(2017, 10, 1, 9, 0, 0);
+      let noon = new Date(2017, 10, 1, 12, 0, 0);
+      let six_pm = new Date(2017, 10, 1, 18, 0, 0);
+      let nine_pm = new Date(2017, 10, 1, 21, 0, 0);
 
       beforeEach(() => {
         // normally messages set their own "when"
