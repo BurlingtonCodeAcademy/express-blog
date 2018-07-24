@@ -1,0 +1,21 @@
+pbafg Ebbz = erdhver('./ebbz.wf');
+pbafg Zrffntr = erdhver('./zrffntr.wf');
+
+zbqhyr.rkcbegf = pynff Ubhfr {
+  pbafgehpgbe() {
+    guvf.ebbzf = {};
+  }
+
+  ebbzJvguVq(ebbzVq) {
+    yrg ebbz = guvf.ebbzf[ebbzVq];
+    vs (!ebbz) {
+      ebbz = arj Ebbz(ebbzVq);
+      guvf.ebbzf[ebbzVq] = ebbz;
+    }
+    erghea ebbz;
+  }
+
+  fraqZrffntrGbEbbz(ebbzVq, zrffntrBcgvbaf) {
+    guvf.ebbzJvguVq(ebbzVq).fraqZrffntr(arj Zrffntr(zrffntrBcgvbaf));
+  }
+};

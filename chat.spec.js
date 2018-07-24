@@ -28,7 +28,7 @@ describe('Message', () => {
       // to watch it fail, uncomment the next line for a 2ms delay
       // for(let i=0; i<1000000; ++i);
 
-      expect(message.when).toBeCloseTo(new Date(), 1);
+      expect(message.when).toBeCloseTo(new Date(), 2);
     });
 
     it('was written by "Anonymous"', () => {
@@ -235,6 +235,40 @@ describe('Room', () => {
         expect(messages).toContain(laterMessage);
       });
     });
+  });
+});
+
+const House = require('./lib/house.js');
+describe('House', () => {
+
+  let house;
+
+  beforeEach(() => {
+    house = new House();
+  });
+
+  it('creates a room when asked for it', () => {
+    let room = house.roomWithId('general');
+    expect(room instanceof Room).toBe(true);
+  });
+
+  it('reuses an existing room when asked for it twice', ()=>{
+    let hello = new Message({body: 'hello'});
+
+    let room = house.roomWithId('general');
+    room.sendMessage(hello);
+
+    let roomAgain = house.roomWithId('general');
+    expect(roomAgain.messages).toContain(hello);
+  });
+
+  it('can send a message to a room directly too', ()=>{
+
+    house.sendMessageToRoom('general', {body: 'hello'});
+
+    let room = house.roomWithId('general');
+    expect(room.messages.length).toEqual(1);
+    expect(room.messages[0].body).toEqual('hello');
   });
 
 });
