@@ -7,6 +7,7 @@
     "lib": "lib"
   },
   "dependencies": {
+    "jasmine-node": "^1.15.0",
     "mime": "^2.3.1",
     "mime-types": "^2.1.18"
   },

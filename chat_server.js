@@ -51,7 +51,7 @@ function handleChatAction(request, handler) {
   } else if (request.method === 'POST') {
     handler.parsePostParams((params) => {
       let message = {
-        username: "Anonymous",
+        username: "anonymous",
         content: params.content,
         when: new Date(Date.now()).toISOString()
       }

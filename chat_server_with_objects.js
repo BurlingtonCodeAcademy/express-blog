@@ -53,9 +53,8 @@ function handleChatAction(request, handler) {
   } else if (request.method === 'POST') {
     handler.parsePostParams((params) => {
       let messageOptions = {
-        username: "Anonymous",
-        body: params.body,
-        when: new Date(Date.now()).toISOString()
+        author: params.author,
+        body: params.body
       }
       chatHouse.sendMessageToRoom('general', messageOptions);
 

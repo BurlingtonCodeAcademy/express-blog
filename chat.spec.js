@@ -28,10 +28,10 @@ describe('Message', () => {
       // to watch it fail, uncomment the next line for a 2ms delay
       // for(let i=0; i<1000000; ++i);
 
-      expect(message.when).toBeCloseTo(new Date(), 2);
+      expect(message.when).toBeCloseTo(new Date(), 10);
     });
 
-    it('was written by "Anonymous"', () => {
+    it('was written by the user "anonymous"', () => {
       expect(message.author).toEqual('anonymous');
     });
 
@@ -50,7 +50,7 @@ describe('Message', () => {
     });
 
     it('contains the current time', () => {
-      expect(message.when).toBeCloseTo(new Date(), 1);
+      expect(message.when).toBeCloseTo(new Date(), 10);
     });
 
     it('has an empty message body', () => {
@@ -69,10 +69,10 @@ describe('Message', () => {
     });
 
     it('contains the current time', () => {
-      expect(message.when).toBeCloseTo(new Date(), 1);
+      expect(message.when).toBeCloseTo(new Date(), 10);
     });
 
-    it('was written by "Anonymous"', () => {
+    it('was written by the user "anonymous"', () => {
       expect(message.author).toEqual('anonymous');
     });
   });
@@ -91,7 +91,7 @@ describe('Message', () => {
     });
 
     it('contains the current time', () => {
-      expect(message.when).toBeCloseTo(new Date(), 1);
+      expect(message.when).toBeCloseTo(new Date(), 10);
     });
   });
 
@@ -290,6 +290,13 @@ describe('House', () => {
     let room = house.roomWithId('general');
     expect(room.messages.length).toEqual(1);
     expect(room.messages[0].body).toEqual('hello');
+  });
+
+  it('when sending a message to a room, fills in fields with defaults', ()=>{
+    house.sendMessageToRoom('general', {body: 'hello'});
+
+    let room = house.roomWithId('general');
+    expect(room.messages[0].author).toEqual('anonymous');
   });
 
 });
