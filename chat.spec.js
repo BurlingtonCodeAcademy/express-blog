@@ -250,6 +250,27 @@ describe('House', () => {
   it('creates a room when asked for it', () => {
     let room = house.roomWithId('general');
     expect(room instanceof Room).toBe(true);
+    expect(room.id).toEqual('general');
+  });
+
+  it('can maintain several rooms', ()=>{
+    let room = house.roomWithId('general');
+    let otherRoom = house.roomWithId('dogs');
+    let firstRoomAgain = house.roomWithId('general');
+
+    expect(room.id).toEqual('general');
+    expect(otherRoom.id).toEqual('dogs');
+    expect(firstRoomAgain.id).toEqual('general');
+  });
+
+  it('can list all room ids', () => {
+    let generalRoom = house.roomWithId('general');
+    let dogsRoom = house.roomWithId('dogs');
+
+    expect(house.allRoomIds()).toContain('dogs')
+    expect(house.allRoomIds()).toContain('general')
+    
+    expect(house.allRoomIds().length).toEqual(2);
   });
 
   it('reuses an existing room when asked for it twice', ()=>{
