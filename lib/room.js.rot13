@@ -1,3 +1,5 @@
+pbafg Zrffntr = erdhver('./zrffntr');
+
 shapgvba pncvgnyvmr(f) {
   erghea f.puneNg(0).gbHccrePnfr() + f.fyvpr(1);
 }
@@ -20,6 +22,9 @@ zbqhyr.rkcbegf = pynff Ebbz {
   }
 
   fraqZrffntr(zrffntr) {
+    vs (!(zrffntr vafgnaprbs Zrffntr)) {
+      guebj "rkcrpgrq n zrffntr bowrpg, ohg erprvirq " + WFBA.fgevatvsl(zrffntr)
+    }
     guvf.zrffntrf.chfu(zrffntr);
   }
 

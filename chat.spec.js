@@ -235,6 +235,12 @@ describe('Room', () => {
         expect(messages).toContain(laterMessage);
       });
     });
+
+    it('rejects messages that are not proper message objects', ()=>{
+      expect(()=>{
+        room.sendMessage("this is a string")
+    }).toThrow('expected a message object, but received "this is a string"');
+    })
   });
 });
 
