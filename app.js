@@ -10,6 +10,7 @@ const publicDir = $path.resolve('./public')
 const articlesDir = $path.join(publicDir, "articles")
 
 // routes
+
 app.all('*', function (request, response, next) {
   console.log('New Request: ' + request.url)
   next()
@@ -46,33 +47,6 @@ app.get('/articles/:articleId', (request, response) => {
   response.send('Unable to send article ' + request.params +
     ' in any of the acceptable formats ' + accepts)
   response.status(400)
-});
-
-// This mega-route is redundant with the above routes.
-// It's to demonstrate how to receive several path parameter variants
-// inside a single route, and how to use the URL to specify the 
-// desired format (instead of the more official but less well-supported
-// Accept header).
-app.get('/articles/:articleId.:format', (request, response) => {
-
-  let filePath = articleFilePath(request.params.articleId)
-
-  switch (request.params.format) {
-    case 'json':
-      // if it's asking for json, send it the json file
-      response.sendFile(filePath);
-      break;
-
-    case 'html':
-      // if it's asking for HTML, send it the article.html file
-      // and let it make a new API request for the JSON data
-      sendArticleHtml(articleId, response);
-      break;
-
-    default:
-      response.send('Unknown format ' + request.params.format)
-      response.status(400)
-  }
 });
 
 app.get('/articles', (request, response) => {
