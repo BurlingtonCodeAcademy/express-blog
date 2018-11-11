@@ -16,10 +16,20 @@ fetch('/search.json' + document.location.search)
 
 function fillArticles(articles) {
   let list = document.querySelector('#articles > ul');
-  for (let article of articles) {
+
+  if (articles.length === 0) {
+    list.innerHTML = 'none';
+  }
+  
+  else for (let article of articles) {
     let item = document.createElement('li');
-    item.innerHTML = '<a href="/articles/' + article.id + '">' + article.title + '</a>';;
+    let html = '<a href="/articles/' + article.id + '">' + article.title + '</a>'
+    if (article.author) {
+      html += ' (by ' + article.author + ')'
+    }
+    item.innerHTML = html;
     list.appendChild(item);
-  }  
+  }
+
 }
 </script>

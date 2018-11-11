@@ -1,29 +1,28 @@
 {
-  "name": "simple-server",
+  "name": "blog",
   "version": "1.0.0",
-  "description": "Source code for the \"Server Side JavaScript\" track:",
-  "main": "cookie_counter.js",
+  "description": "Source code for the \"Server Side JavaScript\" track's blog lesson",
+  "main": "app.js",
   "directories": {
     "lib": "lib"
   },
   "dependencies": {
-    "jasmine-node": "^1.15.0",
-    "mime": "^2.3.1",
-    "mime-types": "^2.1.18"
+    "express": "^4.16.4",
+    "jasmine-node": "^1.15.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node simple_chat.js"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BurlingtonCodeAcademy/simple-server.git"
+    "url": "git+https://github.com/BurlingtonCodeAcademy/express-blog.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BurlingtonCodeAcademy/simple-server/issues"
+    "url": "https://github.com/BurlingtonCodeAcademy/express-blog/issues"
   },
-  "homepage": "https://github.com/BurlingtonCodeAcademy/simple-server#readme"
+  "homepage": "https://github.com/BurlingtonCodeAcademy/express-blog#readme"
 }
