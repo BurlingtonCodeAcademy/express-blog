@@ -3,9 +3,8 @@
 </form>
 
 <h2>Search Results:</h2>
-<div id='articles'>
+<div id='results'>
   <ul>
-    
   </ul>
 </div>
 
@@ -15,7 +14,7 @@ fetch('/search.json' + document.location.search)
   .then(fillArticles)
 
 function fillArticles(articles) {
-  let list = document.querySelector('#articles > ul');
+  let list = document.querySelector('#results > ul');
 
   if (articles.length === 0) {
     list.innerHTML = 'none';
@@ -30,6 +29,5 @@ function fillArticles(articles) {
     item.innerHTML = html;
     list.appendChild(item);
   }
-
 }
 </script>

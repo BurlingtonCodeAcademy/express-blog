@@ -1,29 +1,27 @@
 // libraries
 const fs = require('fs');
 const $path = require('path');
-const express = require('express')
+const express = require('express');
 
 // constants
-const app = express()
-const port = process.env.PORT || 5000
-const publicDir = $path.resolve('./public')
-const articlesDir = $path.join(publicDir, "articles")
+const app = express();
+const port = process.env.PORT || 5000;
+const publicDir = $path.resolve('./public');
+const articlesDir = $path.resolve('./articles');
 
 // routes
 
 app.all('*', function (request, response, next) {
-  console.log('New Request: ' + request.url)
+  console.log(new Date().toISOString() + ' - ' + request.url);
   next()
 })
 
 app.get('/articles/:articleId.json', (request, response) => {
-  console.log(request.params)
   // if it's asking for json, send it the json file
   sendArticleJson(request.params.articleId, response);
 })
 
 app.get('/articles/:articleId.html', (request, response) => {
-  console.log(request.params)
   // if it's asking for HTML, send it the article.html file
   // and let it make a new API request for the JSON data
   sendArticleHtml(request.params.articleId, response)
@@ -32,10 +30,8 @@ app.get('/articles/:articleId.html', (request, response) => {
 app.get('/articles/:articleId', (request, response) => {
   // Without a format in the path, check the *Accept* header
   // to determine which format the client wants.
-  console.log(request.headers)
   let accepts = request.headers.accept.split(',')
   for (let mimeType of accepts) {
-    console.log('Accepts: ' + mimeType)
     if (mimeType === 'text/html') {
       sendArticleHtml(request.params.articleId, response)
       return; // abort the for loop
@@ -57,8 +53,8 @@ app.get('/articles.json', (request, response) => {
   sendArticleList(response);
 })
 
-app.post('/articles', express.urlencoded(), (request, response) => {
-  createArticle(request.body, response)
+app.post('/articles', express.urlencoded({ extended: false }), (request, response) => {
+  createArticle(nextArticleId(), request.body, response)
 })
 
 app.get('/publish', (request, response) => {
@@ -71,9 +67,9 @@ app.get('/search', (request, response) => {
 })
 
 app.get('/search.json', (request, response) => {
-    let results = searchArticles(request.query)
-    response.type('text/json');
-    response.send(JSON.stringify(results));
+  let results = searchArticles(request.query)
+  response.type('text/json');
+  response.send(JSON.stringify(results));
 });
 
 app.use(express.static('public'))
@@ -105,15 +101,13 @@ function allArticles() {
   return fs.readdirSync(articlesDir)
     .filter(file => file.endsWith('.json'))
     .map(file => JSON.parse(fs.readFileSync($path.join(articlesDir, file))))
-    .sort((a,b)=> (a.id - b.id)); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+    .sort((a, b) => (a.id - b.id)); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
 }
 
 function sendArticleList(response) {
   let articles = allArticles();
-  console.log(articles)
   let data = JSON.stringify(articles);
-  response.type('text/json');
-  response.send(data);
+  response.type('text/json').send(data);
 }
 
 function searchArticles(params) {
@@ -128,20 +122,16 @@ function searchArticles(params) {
   return results;
 }
 
-function createArticle(params, response) {
-  let articles = allArticles();
-  let articleId = nextArticleId(articles);
-
-  console.log(params);
+function createArticle(articleId, params, response) {
   let article = {
     id: articleId,
     author: params.author.trim(),
     title: params.title.trim(),
     body: params.body.trim()
-  }
+  };
 
   let articleDataFile = $path.join(articlesDir, articleId + ".json");
-  console.log('Writing article: ' + JSON.stringify(article))
+  console.log('Writing article: ' + JSON.stringify(article));
   fs.writeFile(articleDataFile, JSON.stringify(article), (err) => {
     if (err) {
       response.status(500).send(err);
@@ -152,11 +142,12 @@ function createArticle(params, response) {
 }
 
 // Pick an unused article id.
-function nextArticleId(articles) {
+function nextArticleId() {
+  let articles = allArticles();
+
   // find the highest id...
-  let id = articles.reduce((topId, article) => {
-    return Math.max(topId, article.id);
-  }, 1);
+  let id = articles[articles.length - 1].id;
+
   // ...and pick a higher one
   let articleId = id + 1;
   return articleId;
